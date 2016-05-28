@@ -24,7 +24,7 @@ public:
     void saveTrainingData();
     bool loadTrainingData();
 
-    char recognize(const cv::Mat & img);
+    cv::Mat recognize(const cv::Mat & img);
     std::string recognize(const std::vector<cv::Mat> & images);
 
 private:

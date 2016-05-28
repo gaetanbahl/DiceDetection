@@ -39,7 +39,7 @@ int KNearestOcr::learn(const cv::Mat & img, float n) {
  * Save training data to file.
  */
 void KNearestOcr::saveTrainingData() {
-    cv::FileStorage fs("modeldata", cv::FileStorage::WRITE);
+    cv::FileStorage fs("../modeldata", cv::FileStorage::WRITE);
     fs << "samples" << _samples;
     fs << "responses" << _responses;
     fs.release();
@@ -49,7 +49,7 @@ void KNearestOcr::saveTrainingData() {
  * Load training data from file and init model.
  */
 bool KNearestOcr::loadTrainingData() {
-    cv::FileStorage fs("modeldata", cv::FileStorage::READ);
+    cv::FileStorage fs("../modeldata", cv::FileStorage::READ);
     if (fs.isOpened()) {
         fs["samples"] >> _samples;
         fs["responses"] >> _responses;
@@ -65,14 +65,14 @@ bool KNearestOcr::loadTrainingData() {
 /**
  * Recognize a single digit.
  */
-char KNearestOcr::recognize(const cv::Mat& img) {
+cv::Mat KNearestOcr::recognize(const cv::Mat& img) {
     char cres = '?';
         if (!_pModel) {
             throw std::runtime_error("Model is not initialized");
         }
         cv::Mat results, neighborResponses, dists;
-        float result = _pModel->predict(prepareSample(img), results);
-    return cres;
+        float result = _pModel->findNearest(prepareSample(img),1, results);
+    return results;
 }
 
 /**
