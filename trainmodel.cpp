@@ -5,6 +5,8 @@
 using namespace cv;
 using namespace std;
 
+int n = 3;
+
 int main(int argc, char** argv)
 {
     VideoCapture cap(0);
@@ -17,23 +19,25 @@ int main(int argc, char** argv)
     namedWindow("debug",1);
     for(int i =1;i <= 6;i++)
     {
-        cout << i << endl;
-        Mat lastgood;
-        for(;;) {
-            Mat number = getNumberEdgeMat(cap);
-            if(number.size().height != 0 
-                    && number.size().width != 0 
-                    && number.size().width < 50 
-                    && number.size().height < 50) { 
+        for (int j = 0; j<n;j++) { 
+            cout << "learning " << i << " sample " << j << endl;
+            Mat lastgood;
+            for(;;) {
+                Mat number = getNumberEdgeMat(cap);
+                if(number.size().height != 0 
+                        && number.size().width != 0 
+                        && number.size().width < 50 
+                        && number.size().height < 50) { 
 
-                lastgood = number.clone();
-                imshow("debug",lastgood);
-            }
+                    lastgood = number.clone();
+                    imshow("debug",lastgood);
+                }
 
-            if(waitKey(30) >= 0) {
-                cout << "learning " << i << endl;
-                modele.learn(lastgood,(float) i);
-                break;
+                if(waitKey(30) >= 0) {
+                    cout << "learning " << i << endl;
+                    modele.learn(lastgood,(float) i);
+                    break;
+                }
             }
         }
     }

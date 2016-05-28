@@ -65,14 +65,14 @@ bool KNearestOcr::loadTrainingData() {
 /**
  * Recognize a single digit.
  */
-cv::Mat KNearestOcr::recognize(const cv::Mat& img) {
+float KNearestOcr::recognize(const cv::Mat& img) {
     char cres = '?';
         if (!_pModel) {
             throw std::runtime_error("Model is not initialized");
         }
         cv::Mat results, neighborResponses, dists;
-        float result = _pModel->findNearest(prepareSample(img),1, results);
-    return results;
+        float result = _pModel->findNearest(prepareSample(img),2, results);
+    return result;
 }
 
 /**
