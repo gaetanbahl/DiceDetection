@@ -8,8 +8,12 @@ OpenCV 3 has to be installed.
 ## HowTo
 
 mkdir build
+
 cd build
+
 cmake ..
+
 make 
+
 ./dicedetection
 
