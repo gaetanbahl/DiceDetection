@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     namedWindow("debug",1);
     for(;;)
     {
-        UMat number = getNumberEdgeMat(cap);
+        Mat number = getNumberEdgeMat(cap);
         if(number.size().height != 0 && number.size().width != 0)  
             imshow("debug",number);
 

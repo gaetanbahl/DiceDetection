@@ -10,10 +10,10 @@ using namespace std;
 
 RotatedRect getBiggestRect(vector<RotatedRect> rects) ;
 
-void dispRotatedRectangle(RotatedRect rect, UMat & frame);
+void dispRotatedRectangle(RotatedRect rect, Mat & frame);
 
-vector<vector<Point> > pretraitement(UMat & src, UMat & canny, UMat & contourmat);
+vector<vector<Point> > pretraitement(Mat & src, Mat & canny, Mat & contourmat);
 
-UMat getNumberEdgeMat(VideoCapture & cap);
+Mat getNumberEdgeMat(VideoCapture & cap);
 
 #endif

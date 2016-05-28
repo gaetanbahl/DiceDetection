@@ -29,7 +29,7 @@ RotatedRect getBiggestRect(vector<RotatedRect> rects)
     return rects[maxindex];
 }
 
-void dispRotatedRectangle(RotatedRect rect, UMat & frame)
+void dispRotatedRectangle(RotatedRect rect, Mat & frame)
 {
     Point2f vertices[4];
     rect.points(vertices);
@@ -38,7 +38,7 @@ void dispRotatedRectangle(RotatedRect rect, UMat & frame)
        
 }
 
-vector<vector<Point> > pretraitement(UMat & src, UMat & canny, UMat & contourmat)
+vector<vector<Point> > pretraitement(Mat & src, Mat & canny, Mat & contourmat)
 {
     cvtColor(src, canny, COLOR_BGR2GRAY);
     bitwise_not(canny,canny);
@@ -55,9 +55,9 @@ vector<vector<Point> > pretraitement(UMat & src, UMat & canny, UMat & contourmat
     return contours;
 }
 
-UMat getNumberEdgeMat(VideoCapture & cap) {
-    UMat frame,edges, contourmat;
-    UMat rotated, cropped;
+Mat getNumberEdgeMat(VideoCapture & cap) {
+    Mat frame,edges, contourmat;
+    Mat rotated, cropped;
     cap >> frame;
 
     vector<vector<Point> > contours = pretraitement(frame, edges, contourmat);
