@@ -39,6 +39,23 @@ void dispRotatedRectangle(RotatedRect rect, UMat & frame)
        
 }
 
+vector<vector<Point> > pretraitement(UMat & src, UMat & canny, UMat & contourmat)
+{
+    cvtColor(src, canny, COLOR_BGR2GRAY);
+    bitwise_not(canny,canny);
+    threshold( canny, canny, 220, 255,3);
+    //GaussianBlur(canny, canny, Size(7,7), 1.5, 1.5);
+    Canny(canny,canny, 130,150);
+
+    contourmat = canny.clone();
+
+    vector<vector<Point> > contours;
+
+    findContours( contourmat, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+    return contours;
+}
+
 int main(int argc, char** argv)
 {
     VideoCapture cap(0);
@@ -48,17 +65,10 @@ int main(int argc, char** argv)
     namedWindow("debug",1);
     for(;;)
     {
-        UMat frame,edges;
+        UMat frame,edges, contourmat;
         cap >> frame;
-        cvtColor(frame, edges, COLOR_BGR2GRAY);
-        bitwise_not(edges,edges);
-        threshold( edges, edges, 220, 255,3);
-        //GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
-        //Canny(edges,edges, 130,150);
 
-        vector<vector<Point> > contours;
-
-        findContours( edges, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+        vector<vector<Point> > contours = pretraitement(frame, edges, contourmat);
 
         vector<vector<Point> > contours_poly( contours.size() );
         vector<RotatedRect> boundRect( contours.size() );
@@ -70,7 +80,10 @@ int main(int argc, char** argv)
         }
 
         RotatedRect bigrect = getBiggestRect(boundRect);
-        cv::Mat rot_mat = cv::getRotationMatrix2D(bigrect.center, bigrect.angle, 1);
+        if(bigrect.size.height != 0 && bigrect.size.width != 0) {
+
+
+        Mat rot_mat = cv::getRotationMatrix2D(bigrect.center, bigrect.angle, 1);
 /*
         for( int i = 0; i< contours.size(); i++ )
         {
@@ -83,7 +96,7 @@ int main(int argc, char** argv)
         }
         */
         Mat rotated, cropped;
-        warpAffine(frame, rotated, rot_mat, frame.size(), cv::INTER_CUBIC);
+        warpAffine(edges, rotated, rot_mat, frame.size(), cv::INTER_CUBIC);
         getRectSubPix(rotated, bigrect.size, bigrect.center, cropped);
 
         dispRotatedRectangle(bigrect, frame);
@@ -97,6 +110,7 @@ int main(int argc, char** argv)
 
 
        imshow("debug",cropped);
+        }
 
 
         if(waitKey(30) >= 0) break;
