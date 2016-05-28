@@ -1,5 +1,4 @@
 #include "opencv2/opencv.hpp"
-#include <string>
 #include <cmath>
 
 using namespace cv;
@@ -56,46 +55,28 @@ vector<vector<Point> > pretraitement(UMat & src, UMat & canny, UMat & contourmat
     return contours;
 }
 
-int main(int argc, char** argv)
-{
-    VideoCapture cap(0);
-    if(!cap.isOpened()) 
-        return -1;
+UMat getNumberEdgeMat(VideoCapture & cap) {
+    UMat frame,edges, contourmat;
+    UMat rotated, cropped;
+    cap >> frame;
 
-    namedWindow("debug",1);
-    for(;;)
-    {
-        UMat frame,edges, contourmat;
-        cap >> frame;
+    vector<vector<Point> > contours = pretraitement(frame, edges, contourmat);
 
-        vector<vector<Point> > contours = pretraitement(frame, edges, contourmat);
+    vector<vector<Point> > contours_poly( contours.size() );
+    vector<RotatedRect> boundRect( contours.size() );
 
-        vector<vector<Point> > contours_poly( contours.size() );
-        vector<RotatedRect> boundRect( contours.size() );
+    for( int i = 0; i < contours.size(); i++ )
+    { 
+        approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+        boundRect[i] = minAreaRect( Mat(contours_poly[i]) );
+    }
 
-        for( int i = 0; i < contours.size(); i++ )
-        { 
-            approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
-            boundRect[i] = minAreaRect( Mat(contours_poly[i]) );
-        }
-
-        RotatedRect bigrect = getBiggestRect(boundRect);
-        if(bigrect.size.height != 0 && bigrect.size.width != 0) {
+    RotatedRect bigrect = getBiggestRect(boundRect);
+    if(bigrect.size.height != 0 && bigrect.size.width != 0) {
 
 
         Mat rot_mat = cv::getRotationMatrix2D(bigrect.center, bigrect.angle, 1);
-/*
-        for( int i = 0; i< contours.size(); i++ )
-        {
-            Scalar color = Scalar(255,0,0); 
-            drawContours( frame, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-            Point2f vertices[4];
-            boundRect[i].points(vertices);
-            for (int i = 0; i < 4; i++)
-                line(frame, vertices[i], vertices[(i+1)%4], Scalar(0,255,0));
-        }
-        */
-        Mat rotated, cropped;
+
         warpAffine(edges, rotated, rot_mat, frame.size(), cv::INTER_CUBIC);
         getRectSubPix(rotated, bigrect.size, bigrect.center, cropped);
 
@@ -108,13 +89,9 @@ int main(int argc, char** argv)
             warpAffine(cropped, cropped, rot_mat, frame.size(), cv::INTER_CUBIC);
         }
 
-
-       imshow("debug",cropped);
-        }
-
-
-        if(waitKey(30) >= 0) break;
+        return cropped;
+    } else {
+        return cropped;
     }
-
-    return 0;
 }
+
