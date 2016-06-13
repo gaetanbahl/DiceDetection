@@ -1,11 +1,11 @@
 #include "opencv2/opencv.hpp"
 #include "dicedetection.hpp"
-#include "KNearestOcr.h"
+#include "SVMDice.h"
 
 using namespace cv;
 using namespace std;
 
-int n = 3;
+int n = 4;
 
 int main(int argc, char** argv)
 {
@@ -13,13 +13,13 @@ int main(int argc, char** argv)
     if(!cap.isOpened()) 
         return -1;
 
-    KNearestOcr modele;
+    SVMDice modele;
 
 
     namedWindow("debug",1);
-    for(int i =1;i <= 6;i++)
+    for(int i =1;i <= 12;i++)
     {
-        for (int j = 0; j<n;j++) { 
+        for (int j = 0;j < n;) { 
             cout << "learning " << i << " sample " << j << endl;
             Mat lastgood;
             for(;;) {
@@ -32,11 +32,18 @@ int main(int argc, char** argv)
                     lastgood = number.clone();
                     imshow("debug",lastgood);
                 }
-
-                if(waitKey(30) >= 0) {
-                    cout << "learning " << i << endl;
-                    modele.learn(lastgood,(float) i);
-                    break;
+				int k = waitKey(30);
+                if(k >= 0) {
+                	if (k == 1048586)
+                	{
+                		cout << "learned " << i << " sample " << j << endl;
+                		j++;
+                    	modele.learn(lastgood, i);
+                    } else if (k == 1048686)
+                    {
+                    	j = n;
+                    	break;
+                    }
                 }
             }
         }

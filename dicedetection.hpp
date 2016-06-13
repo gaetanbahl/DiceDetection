@@ -15,5 +15,6 @@ void dispRotatedRectangle(RotatedRect rect, Mat & frame);
 vector<vector<Point> > pretraitement(Mat & src, Mat & canny, Mat & contourmat);
 
 Mat getNumberEdgeMat(VideoCapture & cap);
+vector<Mat> getNumbers(VideoCapture & cap);
 
 #endif

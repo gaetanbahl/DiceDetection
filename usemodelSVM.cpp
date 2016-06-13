@@ -1,6 +1,6 @@
 #include "opencv2/opencv.hpp"
 #include "dicedetection.hpp"
-#include "KNearestOcr.h"
+#include "SVMDice.h"
 
 using namespace cv;
 using namespace std;
@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     if(!cap.isOpened()) 
         return -1;
 
-    KNearestOcr model;
+    SVMDice model;
 
     model.loadTrainingData();
 
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     cap >> image;
     Mat number;
     Mat lastgood;
-    float res;
+    int res;
     string text = "?";
     for(;;) {
         cap >> image;
@@ -33,7 +33,11 @@ int main(int argc, char** argv)
         { 
 
             lastgood = number.clone();
-            text = to_string((int) model.recognize(lastgood));
+            int predictednumber = (int) model.recognize(lastgood);
+            if(predictednumber > 6)
+            	predictednumber -= 6;
+
+            text = to_string((int) predictednumber);
             imshow("debug",lastgood);
         }
 
